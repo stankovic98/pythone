@@ -4,7 +4,8 @@ from time import time
 from urllib.parse import urlparse
 from uuid import uuid4
 
-from flask import Flask, jsonify
+import requests
+from flask import Flask, jsonify, request
 
 class Blockchain:
     def __init__(self):
@@ -121,8 +122,6 @@ class Blockchain:
     @staticmethod
     def valid_proof(last_proof, proof, last_hash):
         guess = f"{last_proof}{proof}{last_hash}".encode()
-        print("ovo je guess: ")
-        print(guess)
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
     
@@ -135,10 +134,10 @@ node_id = str(uuid4()).replace('-', '')
 # instaciraj blockchain
 blockchain = Blockchain()
 
-@app_route('/mine', methods=["GET"])
+@app.route('/mine', methods=['GET'])
 def mine():
     last_block = blockchain.last_block
-    proof = proof_of_work(last_block)
+    proof = blockchain.proof_of_work(last_block)
 
     blockchain.new_transaction(
         sender="0",
@@ -158,7 +157,7 @@ def mine():
     }
     return jsonify(response), 200
 
-@app_route('/transaction/new', methods=['POST'])
+@app.route('/transaction/new', methods=['POST'])
 def new_transaction():
     values = request.get_json()
 
@@ -171,7 +170,7 @@ def new_transaction():
     response = {'message': f'Transaction will be added to Block {index}'}
     return jsonify(response), 201
 
-@app_route('/chain', methods=['GET'])
+@app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
         'chain': blockchain,
@@ -179,7 +178,7 @@ def full_chain():
     }
     return jsonify(response), 200
 
-@app_route('/nodes/register', methods=['POST'])
+@app.route('/nodes/register', methods=['POST'])
 def register_nodes():
     values = request.get_json()
 
@@ -196,7 +195,7 @@ def register_nodes():
     }
     return jsonify(response), 200
 
-@app_route('/nodes/resolve', methods=['GET'])
+@app.route('/nodes/resolve', methods=['GET'])
 def consensus():
     replaced = blockchain.resolve_conflicts()
 
