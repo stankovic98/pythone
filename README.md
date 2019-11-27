@@ -30,3 +30,6 @@ block = {
 * `/chain`
 * `/nodes/register`
 * `/nodes/resolve`
+
+
+[Prezentacija](https://docs.google.com/presentation/d/1LpVKW3Dh1amAImvgst9HZkBSLKuYuwul1zFLstkI7-4/edit?usp=sharing)
